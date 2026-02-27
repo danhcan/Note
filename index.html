@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghi Chú Chung - Fairy Tail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-slate-50 p-2 md:p-4 font-sans text-sm">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-4 bg-white p-4 rounded-lg shadow-sm border border-slate-200 text-center">
+            <h2 class="text-xl font-bold text-slate-800 uppercase">Ghi Chú Dùng Chung</h2>
+            <p class="text-slate-500 text-[10px] mt-1 italic">Mọi người đều có thể xem và cập nhật tại đây</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-lg shadow-md border border-slate-200 mb-6">
+            <div class="flex gap-2">
+                <input type="text" id="noteInput" placeholder="Nhập nội dung cần chia sẻ..." 
+                       class="flex-1 p-2 border border-slate-300 rounded outline-none focus:ring-1 focus:ring-blue-500">
+                <button id="addBtn" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 transition-all">GỬI</button>
+            </div>
+            <p id="statusMsg" class="text-[10px] mt-2 text-slate-400 font-medium">Đang kết nối máy chủ...</p>
+        </div>
+
+        <ul id="noteList" class="space-y-2"></ul>
+    </div>
+
+    <script>
+        // --- 1. ĐIỀN THÔNG TIN CỦA BẠN VÀO ĐÂY ---
+      const firebaseConfig = {
+    apiKey: "AIzaSyASJOvaQMFPow4QsRrqanmwF_TxT2rSm4A",
+    authDomain: "note-4d6dd.firebaseapp.com",
+    projectId: "note-4d6dd",
+    storageBucket: "note-4d6dd.firebasestorage.app",
+    messagingSenderId: "346548073367",
+    appId: "1:346548073367:web:3615e904e933581fed8ad2",
+    measurementId: "G-0BT9G65BFR"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+        // Hàm khởi tạo toàn bộ hệ thống
+        function startApp() {
+            if (typeof firebase === 'undefined') {
+                document.getElementById('statusMsg').innerText = "Lỗi: Không tải được thư viện Firebase!";
+                return;
+            }
+
+            // Khởi tạo
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+            const notesRef = database.ref('shared_notes');
+            const msg = document.getElementById('statusMsg');
+
+            // Lấy dữ liệu
+            notesRef.on('value', (snapshot) => {
+                msg.innerText = "Đã kết nối trực tuyến ✅";
+                const noteList = document.getElementById('noteList');
+                noteList.innerHTML = "";
+                const data = snapshot.val();
+                
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const note = data[key];
+                        const li = document.createElement('li');
+                        li.className = "flex justify-between items-center bg-white p-3 rounded border border-slate-200 shadow-sm animate-fade-in";
+                        li.innerHTML = `
+                            <span class="text-slate-700 cursor-pointer hover:text-blue-600" onclick="copyText('${note.content}')">● ${note.content}</span>
+                            <button onclick="deleteNote('${key}')" class="text-red-400 hover:text-red-600 font-bold ml-2">Xóa</button>
+                        `;
+                        noteList.prepend(li);
+                    });
+                } else {
+                    noteList.innerHTML = "<p class='text-center text-slate-400 italic'>Chưa có ghi chú nào.</p>";
+                }
+            });
+
+            // Gửi dữ liệu
+            document.getElementById('addBtn').onclick = function() {
+                const input = document.getElementById('noteInput');
+                if (input.value.trim()) {
+                    notesRef.push({ content: input.value.trim(), time: Date.now() });
+                    input.value = "";
+                }
+            };
+        }
+
+        // Xóa dữ liệu
+        window.deleteNote = (id) => {
+            if(confirm("Xóa ghi chú này với tất cả mọi người?")) {
+                firebase.database().ref('shared_notes/' + id).remove();
+            }
+        };
+
+        // Copy nhanh
+        window.copyText = (text) => {
+            navigator.clipboard.writeText(text);
+            document.getElementById('statusMsg').innerText = "Đã copy: " + text;
+            setTimeout(() => { document.getElementById('statusMsg').innerText = "Đã kết nối trực tuyến ✅"; }, 2000);
+        };
+
+        // Chạy khi trang đã sẵn sàng
+        window.onload = startApp;
+    </script>
+</body>
+</html>
