@@ -2,110 +2,254 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ghi Chú Chung - Fairy Tail</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WiFi+Bel 3Gang</title>
+    <style>
+        :root{--bg:#f0f2f5;--s:#fff;--t:#1a1a2e;--td:#888;--on:#0c6;--off:#f44;--ac:#6c5ce7}
+        .dark{--bg:#0d0d1a;--s:#141428;--t:#e0e0e0;--td:#606080}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:system-ui;background:var(--bg);color:var(--t);min-height:100vh;display:flex;justify-content:center;padding:20px 16px;-webkit-tap-highlight-color:transparent;user-select:none}
+        .c{max-width:420px;width:100%}
+        .page{display:none}.page.active{display:block;display:flex;flex-direction:column;gap:14px}
+        .top{display:flex;justify-content:space-between;align-items:center}
+        .brand{font-size:22px;font-weight:700}.brand span{color:var(--ac)}
+        .ib{width:36px;height:36px;border-radius:50%;background:var(--s);border:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+        .sb{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--s);border-radius:14px;font-size:11px;color:var(--td);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+        .sd{width:8px;height:8px;border-radius:50%;background:#ff9800}.sd.ok{background:var(--on);animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+        .pb{width:120px;height:120px;border-radius:50%;background:var(--s);border:2px solid rgba(0,0,0,.06);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.4s;box-shadow:0 8px 30px rgba(0,0,0,.1);margin:0 auto}
+        .pb:active{transform:scale(.93)}.pb.on{border-color:var(--on);background:rgba(0,210,160,.08)}
+        .pb .pl{font-size:11px;font-weight:700;color:var(--td);letter-spacing:2px}.pb.on .pl{color:var(--on)}.pb .pe{font-size:32px}
+        .d{display:flex;align-items:center;gap:12px;background:var(--s);border-radius:16px;padding:14px;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid transparent;margin-bottom:8px}
+        .d:active{transform:scale(.98)}.d.on{border-color:rgba(0,210,160,.3);background:rgba(0,210,160,.03)}
+        .di{width:42px;height:42px;border-radius:12px;background:#f0f0f5;display:flex;align-items:center;justify-content:center;font-size:20px}
+        .dn{flex:1;font-size:14px;font-weight:600}.dm{font-size:11px;color:var(--td)}
+        .dt{width:48px;height:26px;border-radius:13px;background:#ccc;cursor:pointer;position:relative;transition:.3s}
+        .dt.on{background:var(--on)}.dt::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.3s}.dt.on::after{left:24px}
+        .sl{font-size:11px;color:var(--td);letter-spacing:2px;text-transform:uppercase}
+        .tc{background:var(--s);border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+        .tch{display:inline-block;padding:7px 12px;border-radius:10px;font-size:12px;cursor:pointer;margin:2px;background:#f0f0f5;border:1px solid transparent;color:var(--td)}
+        .tch.sel{background:rgba(108,92,231,.1);border-color:var(--ac);color:var(--ac);font-weight:600}
+        .ta{width:100%;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:12px;font-weight:600;font-size:13px;cursor:pointer;margin-top:8px}
+        .sc{background:var(--s);border-radius:16px;padding:14px;text-align:center;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.06);color:var(--td);font-size:14px;font-weight:500}
+        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:10px 20px;background:var(--s);border-radius:30px;font-size:12px;z-index:99;opacity:0;transition:.4s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.15);color:var(--t)}
+        .toast.show{opacity:1}
+        /* SETTINGS */
+        .h2{text-align:center;margin-bottom:8px}
+        .btn2{width:100%;padding:14px;background:var(--ac);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;margin-bottom:10px}
+        .list{display:flex;flex-direction:column;gap:6px;max-height:250px;overflow-y:auto;margin-bottom:10px}
+        .item{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--s);border-radius:10px;cursor:pointer;border:1px solid rgba(0,0,0,.06);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+        .item:hover{border-color:var(--ac)}.item.sel{background:rgba(108,92,231,.1);border-color:var(--ac)}
+        .ssid{font-weight:600}.sig{font-size:12px;color:var(--td)}
+        .pw2{margin-top:10px;display:none}.pw2.show{display:block}
+        input{width:100%;padding:12px;background:var(--s);border:1px solid rgba(0,0,0,.1);border-radius:10px;font-size:14px;margin-bottom:8px;outline:none;color:var(--t)}
+        .btn-c{width:100%;padding:12px;background:var(--on);color:#000;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
+        .rst{margin-top:14px;padding-top:12px;border-top:1px solid rgba(0,0,0,.1);text-align:center}
+        .btn-rst{padding:10px 20px;background:var(--off);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px}
+        .back{display:inline-block;margin-top:10px;color:var(--ac);cursor:pointer;font-size:13px}
+    </style>
 </head>
-<body class="bg-slate-50 p-2 md:p-4 font-sans text-sm">
-    <div class="max-w-4xl mx-auto">
-        <div class="mb-4 bg-white p-4 rounded-lg shadow-sm border border-slate-200 text-center">
-            <h2 class="text-xl font-bold text-slate-800 uppercase">Ghi Chú Dùng Chung</h2>
-            <p class="text-slate-500 text-[10px] mt-1 italic">Mọi người đều có thể xem và cập nhật tại đây</p>
+<body>
+    <div class="toast" id="toast"></div>
+    <div class="c">
+        <!-- ========== TRANG ĐIỀU KHIỂN ========== -->
+        <div class="page active" id="pageControl">
+            <div class="top"><div class="brand">WiFi+Bel <span>3Gang</span></div><div class="ib" onclick="toggleTheme()">D/L</div></div>
+            <div class="sb"><div class="sd" id="sdot"></div><span id="st">Dang ket noi...</span></div>
+            <div class="pb" id="pbtn" onclick="toggleAll()"><span class="pl" id="plbl">ALL OFF</span><span class="pe">P</span></div>
+            <div id="dlist"></div>
+            <div class="sl">Hen gio</div>
+            <div class="tc"><div id="tdevs"></div><div id="tmins"></div><button class="ta" onclick="applyTimer()">Ap dung</button></div>
+            <div class="sl">Cai dat</div>
+            <div class="sc" onclick="showPage('pageSettings')">Cau hinh WiFi & Khoi phuc</div>
         </div>
 
-        <div class="bg-white p-4 rounded-lg shadow-md border border-slate-200 mb-6">
-            <div class="flex gap-2">
-                <input type="text" id="noteInput" placeholder="Nhập nội dung cần chia sẻ..." 
-                       class="flex-1 p-2 border border-slate-300 rounded outline-none focus:ring-1 focus:ring-blue-500">
-                <button id="addBtn" class="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 transition-all">GỬI</button>
+        <!-- ========== TRANG SETTINGS ========== -->
+        <div class="page" id="pageSettings">
+            <h2 class="h2">WiFi Setup</h2>
+            <p style="text-align:center;color:var(--td);font-size:13px;margin-bottom:14px">Chon mang WiFi</p>
+            <button class="btn2" id="btnS" onclick="scanWiFi()">Quet WiFi</button>
+            <div class="list" id="wifiList"><div style="text-align:center;color:var(--td);padding:20px">Nhan nut de quet</div></div>
+            <div class="pw2" id="pwSec">
+                <div style="font-size:12px;color:var(--td);margin-bottom:4px">Mat khau: <b id="ssidSel" style="color:var(--ac)"></b></div>
+                <input type="password" id="pwd" placeholder="Nhap mat khau...">
+                <button class="btn-c" id="btnC" onclick="connectWiFi()">Ket noi</button>
             </div>
-            <p id="statusMsg" class="text-[10px] mt-2 text-slate-400 font-medium">Đang kết nối máy chủ...</p>
+            <div class="rst">
+                <button class="btn-rst" onclick="factoryReset()">Khoi phuc cai dat goc</button>
+                <p style="font-size:11px;color:var(--td);margin-top:4px">Xoa WiFi & ve AP mode</p>
+                <div class="back" onclick="showPage('pageControl')">Quay lai dieu khien</div>
+            </div>
         </div>
-
-        <ul id="noteList" class="space-y-2"></ul>
     </div>
 
     <script>
-        // --- 1. ĐIỀN THÔNG TIN CỦA BẠN VÀO ĐÂY ---
-      const firebaseConfig = {
-    apiKey: "AIzaSyASJOvaQMFPow4QsRrqanmwF_TxT2rSm4A",
-    authDomain: "note-4d6dd.firebaseapp.com",
-    projectId: "note-4d6dd",
-    storageBucket: "note-4d6dd.firebasestorage.app",
-    messagingSenderId: "346548073367",
-    appId: "1:346548073367:web:3615e904e933581fed8ad2",
-    measurementId: "G-0BT9G65BFR"
-};
+        // ===== BIẾN CHUNG =====
+        var ESP = '';
+        var N = ['Den','Quat','Switch3'], I = ['D','Q','S'], M = [1,5,15,30,60,120];
+        var states = [0,0,0], timers = {}, sDev = 0, sMin = 15, dark = false, ok = false;
+        var selWiFi = '', openWiFi = false;
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-        // Hàm khởi tạo toàn bộ hệ thống
-        function startApp() {
-            if (typeof firebase === 'undefined') {
-                document.getElementById('statusMsg').innerText = "Lỗi: Không tải được thư viện Firebase!";
-                return;
-            }
-
-            // Khởi tạo
-            firebase.initializeApp(firebaseConfig);
-            const database = firebase.database();
-            const notesRef = database.ref('shared_notes');
-            const msg = document.getElementById('statusMsg');
-
-            // Lấy dữ liệu
-            notesRef.on('value', (snapshot) => {
-                msg.innerText = "Đã kết nối trực tuyến ✅";
-                const noteList = document.getElementById('noteList');
-                noteList.innerHTML = "";
-                const data = snapshot.val();
-                
-                if (data) {
-                    Object.keys(data).forEach(key => {
-                        const note = data[key];
-                        const li = document.createElement('li');
-                        li.className = "flex justify-between items-center bg-white p-3 rounded border border-slate-200 shadow-sm animate-fade-in";
-                        li.innerHTML = `
-                            <span class="text-slate-700 cursor-pointer hover:text-blue-600" onclick="copyText('${note.content}')">● ${note.content}</span>
-                            <button onclick="deleteNote('${key}')" class="text-red-400 hover:text-red-600 font-bold ml-2">Xóa</button>
-                        `;
-                        noteList.prepend(li);
-                    });
-                } else {
-                    noteList.innerHTML = "<p class='text-center text-slate-400 italic'>Chưa có ghi chú nào.</p>";
-                }
-            });
-
-            // Gửi dữ liệu
-            document.getElementById('addBtn').onclick = function() {
-                const input = document.getElementById('noteInput');
-                if (input.value.trim()) {
-                    notesRef.push({ content: input.value.trim(), time: Date.now() });
-                    input.value = "";
-                }
-            };
+        // ===== HIỂN THỊ TRANG =====
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+            document.getElementById(id).classList.add('active');
+            if (id === 'pageSettings') setTimeout(scanWiFi, 500);
         }
 
-        // Xóa dữ liệu
-        window.deleteNote = (id) => {
-            if(confirm("Xóa ghi chú này với tất cả mọi người?")) {
-                firebase.database().ref('shared_notes/' + id).remove();
+        // ===== TOAST =====
+        function toast(m) {
+            var e = document.getElementById('toast');
+            e.textContent = m; e.classList.add('show');
+            clearTimeout(e._t); e._t = setTimeout(function(){ e.classList.remove('show'); }, 2000);
+        }
+
+        // ===== THEME =====
+        function toggleTheme() {
+            dark = !dark; document.body.classList.toggle('dark', dark);
+            localStorage.setItem('dk', dark ? 1 : 0);
+            toast(dark ? 'Dark' : 'Light');
+        }
+        if (localStorage.getItem('dk') == 1) { dark = true; document.body.classList.add('dark'); }
+
+        // ===== TỰ ĐỘNG TÌM ESP =====
+        function autoFindESP() {
+            if (window.location.hostname && window.location.hostname !== 'localhost') {
+                ESP = window.location.origin;
+                fetchStatus();
+                setInterval(fetchStatus, 8000);
+            } else {
+                // Thử quét mạng local
+                var base = '192.168.1';
+                for (var i = 1; i <= 10; i++) {
+                    testESP('http://' + base + '.' + i);
+                }
+                testESP('http://192.168.4.1'); // AP mode
             }
-        };
+        }
 
-        // Copy nhanh
-        window.copyText = (text) => {
-            navigator.clipboard.writeText(text);
-            document.getElementById('statusMsg').innerText = "Đã copy: " + text;
-            setTimeout(() => { document.getElementById('statusMsg').innerText = "Đã kết nối trực tuyến ✅"; }, 2000);
-        };
+        function testESP(url) {
+            fetch(url + '/status').then(function(r){ return r.json(); }).then(function(d){
+                if (d.switches) { ESP = url; fetchStatus(); setInterval(fetchStatus, 8000); }
+            }).catch(function(){});
+        }
 
-        // Chạy khi trang đã sẵn sàng
-        window.onload = startApp;
+        // ===== API =====
+        async function api(u, b) {
+            if (!ESP) return null;
+            try {
+                var o = {}; if (b) { o.method = 'POST'; o.headers = {'Content-Type':'application/json'}; o.body = JSON.stringify(b); }
+                var r = await fetch(ESP + u, o); ok = true; return await r.json();
+            } catch (e) { ok = false; return null; }
+        }
+
+        // ===== RENDER ĐIỀU KHIỂN =====
+        function fmt(s) {
+            if (s >= 3600) return Math.floor(s/3600) + 'h' + (s%3600 >= 60 ? ' ' + Math.floor((s%3600)/60) + 'm' : '');
+            return Math.ceil(s/60) + 'm';
+        }
+
+        function render() {
+            var h = '';
+            for (var i = 0; i < 3; i++) {
+                var a = states[i], tm = timers[i] && timers[i] > 0;
+                h += '<div class="d' + (a ? ' on' : '') + '" onclick="toggle(' + i + ')"><div class="di">' + I[i] + '</div><div class="dn">' + N[i] + '</div><div class="dm">' + (a ? '[ON]' : '[OFF]') + (tm ? ' - ' + fmt(timers[i]) : '') + '</div><div class="dt' + (a ? ' on' : '') + '" onclick="event.stopPropagation();toggle(' + i + ')"></div></div>';
+            }
+            document.getElementById('dlist').innerHTML = h;
+            var dh = ''; for (var i = 0; i < 3; i++) dh += '<span class="tch' + (sDev === i ? ' sel' : '') + '" onclick="sd(' + i + ')">' + I[i] + ' ' + N[i] + '</span>';
+            document.getElementById('tdevs').innerHTML = dh;
+            var mh = ''; M.forEach(function(m){ mh += '<span class="tch' + (sMin === m ? ' sel' : '') + '" onclick="sm(' + m + ')">' + (m >= 60 ? m/60 + 'h' : m + 'm') + '</span>'; });
+            document.getElementById('tmins').innerHTML = mh;
+            var ao = states.every(function(s){ return s; });
+            document.getElementById('pbtn').classList.toggle('on', ao);
+            document.getElementById('plbl').textContent = ao ? 'ALL ON' : (states.some(function(s){ return s; }) ? 'MIXED' : 'ALL OFF');
+            document.getElementById('sdot').classList.toggle('ok', ok);
+            document.getElementById('st').textContent = ok ? 'Da ket noi ' + ESP : 'Chua ket noi';
+        }
+
+        async function fetchStatus() {
+            var d = await api('/status');
+            if (d) { states = d.switches; if (d.timers) d.timers.forEach(function(x, i){ timers[i] = x.active ? x.remaining : 0; }); }
+            render();
+        }
+
+        async function toggle(i) {
+            var ns = !states[i]; var d = await api('/toggle', {id: i, state: ns});
+            if (d) { states[i] = ns; if (!ns) delete timers[i]; }
+            toast((ns ? '[ON] ' : '[OFF] ') + N[i]); render();
+        }
+
+        async function toggleAll() {
+            var ao = states.every(function(s){ return s; });
+            var d = await api('/all', {state: !ao});
+            if (d) {
+                if (ao) { states = [0,0,0]; timers = {}; toast('[OFF] Tat het'); }
+                else { states = [1,1,1]; timers = {}; toast('[ON] Bat het'); }
+            }
+            render();
+        }
+
+        function sd(i) { sDev = i; render(); }
+        function sm(m) { sMin = m; render(); }
+
+        async function applyTimer() {
+            var d = await api('/timer', {id: sDev, minutes: sMin});
+            if (d) { states[sDev] = 1; timers[sDev] = sMin * 60; toast('Hen gio ' + N[sDev] + ': ' + sMin + ' phut'); }
+            render();
+        }
+
+        // ===== SCAN WIFI =====
+        async function scanWiFi() {
+            if (!ESP) { toast('Chua ket noi ESP32!'); return; }
+            var b = document.getElementById('btnS'); b.disabled = true; b.textContent = 'Dang quet...';
+            try {
+                var r = await fetch(ESP + '/scan'); var d = await r.json();
+                var l = document.getElementById('wifiList'); l.innerHTML = '';
+                if (d.networks && d.networks.length) {
+                    d.networks.sort(function(a,b){ return b.rssi - a.rssi; });
+                    d.networks.forEach(function(n){
+                        var div = document.createElement('div'); div.className = 'item';
+                        var s = ''; if (n.rssi > -50) s = 'Manh'; else if (n.rssi > -70) s = 'TB'; else s = 'Yeu';
+                        div.innerHTML = '<span class="ssid">' + (n.open ? '[MO] ' : '[KHOA] ') + n.ssid + '</span><span class="sig">' + s + ' ' + n.rssi + 'dBm</span>';
+                        div.onclick = function(){
+                            document.querySelectorAll('.item').forEach(function(i){ i.classList.remove('sel'); });
+                            div.classList.add('sel'); selWiFi = n.ssid; openWiFi = n.open;
+                            document.getElementById('ssidSel').textContent = selWiFi;
+                            document.getElementById('pwSec').classList.add('show');
+                            document.getElementById('pwd').placeholder = openWiFi ? 'WiFi mo, de trong' : 'Nhap mat khau...';
+                        };
+                        l.appendChild(div);
+                    });
+                    toast('[OK] Tim thay ' + d.networks.length + ' mang');
+                } else {
+                    l.innerHTML = '<div style="text-align:center;color:var(--td);padding:20px">Khong tim thay WiFi</div>';
+                }
+            } catch(e) { toast('[LOI] Loi quet'); }
+            b.disabled = false; b.textContent = 'Quet lai';
+        }
+
+        async function connectWiFi() {
+            if (!selWiFi) { toast('[!] Chon WiFi'); return; }
+            var pwd = document.getElementById('pwd').value;
+            if (!openWiFi && !pwd) { toast('[!] Nhap mat khau'); return; }
+            var b = document.getElementById('btnC'); b.disabled = true; b.textContent = 'Dang ket noi...';
+            try {
+                var r = await fetch(ESP + '/connect', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ssid:selWiFi, password:pwd})});
+                toast('[OK] Thanh cong!');
+                setTimeout(function(){ showPage('pageControl'); }, 2000);
+            } catch(e) { toast('[LOI] That bai'); }
+            b.disabled = false; b.textContent = 'Ket noi';
+        }
+
+        async function factoryReset() {
+            if (confirm('Xoa TAT CA WiFi?')) {
+                try { await fetch(ESP + '/reset'); toast('[OK] Da khoi phuc!'); setTimeout(function(){ location.reload(); }, 2000); }
+                catch(e) { toast('Dang khoi dong lai...'); setTimeout(function(){ location.reload(); }, 2000); }
+            }
+        }
+
+        // ===== START =====
+        autoFindESP();
     </script>
 </body>
 </html>
