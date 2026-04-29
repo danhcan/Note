@@ -1,0 +1,17 @@
+name: flutter_device_controller
+description: App Flutter dieu khien cong tac kinh 3 gang cho ESP32-C3.
+publish_to: 'none'
+version: 1.1.0+2
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.1
+  multicast_dns: ^0.3.2+6
+  speech_to_text: ^7.0.0
+
+flutter:
+  uses-material-design: true
